@@ -15,4 +15,9 @@ to the data dir
 	- pydicom
 	- numpy
 
+### TODO
+Functionality for dataset inflation  (add reflected images, images with noise added, rotated images).  
+Image preprocessing.  
+
+
 

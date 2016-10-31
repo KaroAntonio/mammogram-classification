@@ -50,11 +50,13 @@ class BatchLoader:
         return self.next_batch(self.test_ptr, self.test_x, self.test_y)
 
 class DataLoader:
-	def __init__(self, metadata_fid, crosswalk_fid, imgs_dir, num_imgs=None):
+	def __init__(self, metadata_fid, crosswalk_fid, imgs_dir, num_imgs=None, crop=True, scale=(200,200)):
 		self.metadata_fid = metadata_fid
 		self.crosswalk_fid = crosswalk_fid
 		self.imgs_dir = imgs_dir
 		self.num_imgs = num_imgs # default None loads all imgs
+		self.crop = crop
+		self.scale = scale
 
 		self.imgs = {} # super dict to store all img data indexed by img_ids
 		self.exams = {} # each exam maps to images for that exam
@@ -76,10 +78,9 @@ class DataLoader:
 				'R':'cancerR'
 				}
 		for img_id,img in self.imgs.items():
-			if 'dicom' in  img:
+			if 'pixels' in  img:
 				view = img['imageView'].strip()
-				pixels =  img['dicom'].pixel_array
-				print(pixels.shape)
+				pixels =  img['pixels']
 				x += [pixels]
 				if view in  view_map:
 					y += [int(img[view_map[view]])]
@@ -105,17 +106,42 @@ class DataLoader:
 			}
 		return  train, test
 
-
 	def load_dcm_img(self, fid):
 		return dicom.read_file(fid)
+
+	def pre_process_pixels(self,  pixels):
+		# TODO  Validate that this works
+		if self.crop:
+			# crop image to be square by shortest dimension
+			min_dim = min(pixels.shape)
+			begin = (pixels.shape[0]-pixels.shape[1])/2
+			end =  begin+min_dim
+			if min_dim == pixels.shape[1]:
+				pixels = pixels.T[begin:end].T
+			else: 
+				pixels = pixels[begin:end]
+
+		if self.scale:
+			# scale image by scale factor
+			# assume input and output are square...?
+			w = pixels.shape[0]
+			h = pixels.shape[1]
+			nw = self.scale[0]
+			nh = self.scale[1]
+			pixels = pixels[w%nw:,h%nh:]
+			pixels = pixels.reshape((nw,pixels.shape[0]//nw,nh,-1))
+			pixels = pixels.mean(axis=3).mean(1)
+
+		return pixels
 
 	def load_dcm_imgs(self,dir_path, num_imgs):
 		root, _, files = list(os.walk(dir_path, topdown=True))[0]
 		for name in files[:num_imgs]:
 			img_id = name.replace('.dcm','.dcm.gz')
 			if '.dcm.gz'in img_id:
+				img = self.imgs[img_id]
 				ds = self.load_dcm_img(os.path.join(root, name))
-				self.imgs[img_id]['dicom']= ds
+				img['pixels'] = self.pre_process_pixels(ds.pixel_array)
 
 	def load_crosswalkdata(self, fid):
 		metadata = load_tsv(fid)
@@ -153,4 +179,5 @@ if __name__ == '__main__':
 	train,test = dl.get_train_test(0.5)
 
 	bl =  BatchLoader(train, test, 3)
-	print(bl.next_train())
+	train_x,  train_y =  bl.next_train()
+	print(train_x)

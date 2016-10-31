@@ -1,0 +1,6 @@
+RESOURCES
+
+https://papers.nips.cc/paper/5542-recurrent-models-of-visual-attention.pdf
+
+ISSUES
+Class distribution
