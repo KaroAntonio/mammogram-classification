@@ -1,6 +1,7 @@
-import csv, os
+import csv, os, sys, random
 import dicom
 import numpy as np
+import collections
 
 def load_tsv(fid):
 	f = open(fid,'r')
@@ -77,7 +78,9 @@ class DataLoader:
 				'L':'cancerL',
 				'R':'cancerR'
 				}
-		for img_id,img in self.imgs.items():
+		items = self.imgs.items()
+		random.shuffle(items)
+		for img_id,img in items:
 			if 'pixels' in  img:
 				view = img['imageView'].strip()
 				pixels =  img['pixels']
@@ -85,7 +88,7 @@ class DataLoader:
 				if view in  view_map:
 					y += [int(img[view_map[view]])]
 				else: print('INVALID VIEW: {}'.format(view))
-		return np.array(x), np.array(y)
+		return np.array(x).astype('float32'), np.array(y)
 
 	def get_train_test(self, split=0.8):
 		'''
@@ -94,7 +97,6 @@ class DataLoader:
 		the  remaining data is used for  testing
 		'''
 		x,y = self.to_xy()
-
 		split_i = int(len(x)*0.8)
 		train =  {
 			'x':x[:split_i],
@@ -136,12 +138,24 @@ class DataLoader:
 
 	def load_dcm_imgs(self,dir_path, num_imgs):
 		root, _, files = list(os.walk(dir_path, topdown=True))[0]
+		ctr=0
+		print('Loading DCM Images')
+		percent_str = ''
 		for name in files[:num_imgs]:
+			# PROGRESS BAR
+			sys.stdout.write("\b"*len(percent_str))
+			sys.stdout.flush()
+			percent_str = "{0:.1f}%".format((ctr*100)/float(num_imgs))
+			sys.stdout.write(percent_str)
+			sys.stdout.flush()
+
 			img_id = name.replace('.dcm','.dcm.gz')
 			if '.dcm.gz'in img_id:
+				ctr+=1
 				img = self.imgs[img_id]
 				ds = self.load_dcm_img(os.path.join(root, name))
 				img['pixels'] = self.pre_process_pixels(ds.pixel_array)
+		print('\nFinished Loading {} images.'.format(ctr))
 
 	def load_crosswalkdata(self, fid):
 		metadata = load_tsv(fid)
@@ -160,6 +174,13 @@ class DataLoader:
 
 			for k in row:
 				img[k] = row[k]
+
+	def distribution(self):
+		'''
+		return a (sort of) dict of the class distribution for the data
+		'''
+		x,y = self.to_xy()
+		return collections.Counter(y)
 
 	def load_metadata(self, fid):
 		data = load_tsv(fid)
