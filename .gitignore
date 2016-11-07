@@ -1,3 +1,7 @@
 *.dcm
 data/pilot_images/
+*.tsv
+*.xlsx
+
+
 

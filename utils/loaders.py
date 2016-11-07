@@ -158,15 +158,15 @@ class DataLoader:
 		print('\nFinished Loading {} images.'.format(ctr))
 
 	def load_crosswalkdata(self, fid):
-		metadata = load_tsv(fid)
-		for row in metadata:
+		data = load_tsv(fid)
+		for row in data:
 			imgs_id = row['filename']
 			if imgs_id in self.imgs: print(row)
 
 			self.imgs[imgs_id] = {}
 			img = self.imgs[imgs_id]
 
-			exam_id = row['examIndex']+'_'+row['examIndex']
+			exam_id = row['patientId']+'_'+row['examIndex']
 			if exam_id not in self.exams:
 				self.exams[exam_id] = {}
 			img[exam_id] = self.exams[exam_id]
@@ -185,11 +185,12 @@ class DataLoader:
 	def load_metadata(self, fid):
 		data = load_tsv(fid)
 		for row in data:
-			exam_id = row['examIndex']+'_'+row['examIndex']
+			exam_id = row['patientId']+'_'+row['examIndex']
 			for imgs_id in self.exams[exam_id]:
 				img = self.exams[exam_id][imgs_id]
 				for k in row:
 					img[k] = row[k]
+
 
 if __name__ == '__main__':
 	m_fid = 'data/exams_metadata_pilot.tsv'

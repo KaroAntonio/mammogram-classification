@@ -73,6 +73,6 @@ model.fit(train['x'], train['y'], batch_size=batch_size, nb_epoch=nb_epoch,
 
 score = model.evaluate(test['x'], test['y'], verbose=0)
 
-print('Test score:', score[0])
+print('Test loss:', score[0])
 print('Test accuracy:', score[1])
 
