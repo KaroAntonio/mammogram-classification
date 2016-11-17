@@ -2,6 +2,6 @@
 data/pilot_images/
 *.tsv
 *.xlsx
-
-
-
+data/
+.DS_Store
+__pycache__/
