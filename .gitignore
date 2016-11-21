@@ -2,11 +2,5 @@
 
 *.dcm
 data/pilot_images/
-<<<<<<< dc021df1cea635cda421f3085354f8fe582048c0
 *.tsv
 *.xlsx
-
-
-
-=======
->>>>>>> Ignore more files
