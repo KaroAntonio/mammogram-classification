@@ -1,4 +1,4 @@
-FROM tschaffter/keras-gpu
+FROM centos:centos7
 MAINTAINER Thomas Schaffter <thomas.schaffter@gmail.com>
 
 RUN yum install -y perl \
