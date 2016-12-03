@@ -1,6 +1,6 @@
 .DS_Store
 
-*.dcm
-data/pilot_images/
-*.tsv
-*.xlsx
+preprocessedData/
+metadata/
+trainingData/
+
