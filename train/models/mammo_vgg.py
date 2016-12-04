@@ -8,7 +8,7 @@ from __future__ import print_function
 from keras import backend as K
 from keras.layers import Convolution2D, MaxPooling2D, BatchNormalization
 from keras.layers import Flatten, Dense, Input
-from keras.layers.advanced_activations import LeakyReLU
+from keras.layers.advanced_activations import PReLU
 from keras.models import Model
 
 
