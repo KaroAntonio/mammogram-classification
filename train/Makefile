@@ -9,13 +9,15 @@ METADATA_DIR := ${CURDIR}/../metadata
 PREPROCESS_DIR := ${CURDIR}/../preprocessedData
 DOCKER_TAG := csc490-train-local
 
-all: test_local
+all: test_local_simple
 
 docker-build:
 	docker build -t $(DOCKER_TAG) .
 
+test_local_simple:
+	env LOCAL_TEST=1 python train_mammo_vgg.py
+
 test_local: docker-build
-	export LOCAL_TEST=1
 	docker run -d -P --name csc490-training \
 		   -v $(TRAINING_DATA_DIR):/trainingData:ro \
 		   -v $(METADATA_DIR):/metadata:ro \

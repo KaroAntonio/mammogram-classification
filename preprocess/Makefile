@@ -19,7 +19,6 @@ test-prep:
 	mkdir -p $(PREPROCESS_DIR)
 
 test_local: test-prep docker-build
-	export LOCAL_TEST=1
 	docker run -d -P --name csc490-preprocessing \
 		   -v $(TRAINING_DATA_DIR):/trainingData:ro \
 		   -v $(METADATA_DIR):/metadata:ro \

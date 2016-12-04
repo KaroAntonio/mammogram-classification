@@ -31,6 +31,8 @@ if __name__ == '__main__':
     labels = sl.labels
     labels = np_utils.to_categorical(labels, nb_classes)
 
+    model.compile(optimizer='adam', loss='binary_crossentropy')
+
     model.fit(sl.imgs, labels, batch_size=batch_size, nb_epoch=nb_epoch,
               verbose=1, validation_split=train_split)
 

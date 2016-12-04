@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import csv
 
+import numpy as np
 from keras.preprocessing import image
 
 from .constants import LOCAL_TEST, PREPROCESS_DIR, PREPROCESS_IMG_DIR
@@ -33,3 +34,6 @@ class SimpleLoader:
             loaded = image.img_to_array(loaded)
             self.imgs.append(loaded)
             self.labels.append(pair['label'])
+
+        self.imgs = np.array(self.imgs)
+        self.labels = np.array(self.labels)
