@@ -117,7 +117,9 @@ def VGG16(include_top=True, weights='imagenet', input_tensor=None):
         x = PReLU()(x)
         x = Dense(4096, name='fc2')(x)
         x = PReLU()(x)
-        x = Dense(1000, activation='softmax', name='predictions')(x)
+        x = Dense(1000)(x)
+        x = PReLU()(x)
+        x = Dense(1, activation='softmax', name='predictions')(x)
 
     # Create model
     m = Model(img_input, x)

@@ -32,11 +32,11 @@ if __name__ == '__main__':
     labels = np_utils.to_categorical(labels, nb_classes)
 
     model.compile(optimizer='adam', loss='binary_crossentropy')
-
+    model.summary()
     model.fit(sl.imgs, labels, batch_size=batch_size, nb_epoch=nb_epoch,
               verbose=1, validation_split=train_split)
 
-    # score = model.evaluate(test['x'], test['y'], verbose=0)
+    score = model.evaluate(test['x'], test['y'], verbose=0)
 
-    # print('Test loss:', score[0])
-    # print('Test accuracy:', score[1])
+    print('Test loss:', score[0])
+    print('Test accuracy:', score[1])
