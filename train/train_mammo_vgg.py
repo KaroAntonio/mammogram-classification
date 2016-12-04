@@ -2,9 +2,9 @@ from __future__ import print_function
 import os
 
 import numpy as np
-from keras.utils import np_utils
 from models.mammo_vgg import VGG16
 import utils.simple_loader as sl
+import utils.constants as c
 
 
 if __name__ == '__main__':
@@ -14,7 +14,7 @@ if __name__ == '__main__':
     seed = os.getenv('RANDOM_SEED', '1337')
     np.random.seed(int(seed))
 
-    train_split = 0.6
+    train_split = 0.3
     batch_size = 5
     # number of convolutional filters to use
     nb_filters = 32
@@ -28,15 +28,15 @@ if __name__ == '__main__':
 
     sl = sl.SimpleLoader()
 
-    labels = sl.labels
-    labels = np_utils.to_categorical(labels, nb_classes)
-
-    model.compile(optimizer='adam', loss='binary_crossentropy')
+    model.compile(optimizer='adam', loss='binary_crossentropy',
+                  metrics=['binary_accuracy', 'precision', 'recall'])
     model.summary()
-    model.fit(sl.imgs, labels, batch_size=batch_size, nb_epoch=nb_epoch,
+    model.fit(sl.imgs, sl.labels, batch_size=batch_size, nb_epoch=nb_epoch,
               verbose=1, validation_split=train_split)
 
-    score = model.evaluate(test['x'], test['y'], verbose=0)
+    model.save(c.MODELSTATE_DIR + '/trained.hdf')
 
-    print('Test loss:', score[0])
-    print('Test accuracy:', score[1])
+    # score = model.evaluate(test['x'], test['y'], verbose=0)
+
+    # print('Test loss:', score[0])
+    # print('Test accuracy:', score[1])

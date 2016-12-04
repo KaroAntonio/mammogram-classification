@@ -1,8 +1,12 @@
 FROM tschaffter/keras-gpu
 MAINTAINER James Yuan <jamesj.yuan@mail.utoronto.ca>
 
+RUN pip install --upgrade pip
+RUN pip install Pillow
+RUN pip install --upgrade keras
+
 WORKDIR /
 COPY train.sh .
 COPY train_mammo_vgg.py .
-COPY models .
-COPY utils .
+COPY models /models
+COPY utils /utils
