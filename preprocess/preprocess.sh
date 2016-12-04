@@ -23,7 +23,7 @@ IMAGE_LABELS_FILENAME="$PREPROCESS_DIRECTORY/metadata/image_labels.txt"
 mkdir -p $PREPROCESS_IMAGES_DIRECTORY
 
 echo "Resizing and converting $(find $IMAGES_DIRECTORY -name "*.dcm" | wc -l) DICOM images to PNG format"
-find $IMAGES_DIRECTORY/ -name "*.dcm" | parallel --will-cite "convert {} -resize 500x500! $PREPROCESS_IMAGES_DIRECTORY/{/.}.png" # faster than mogrify
+find $IMAGES_DIRECTORY/ -name "*.dcm" | parallel --will-cite "convert {} -resize 224x224! $PREPROCESS_IMAGES_DIRECTORY/{/.}.png" # faster than mogrify
 echo "PNG images have been successfully saved to $PREPROCESS_IMAGES_DIRECTORY/."
 
 echo "Generating image labels to $IMAGE_LABELS_FILENAME"
