@@ -8,15 +8,18 @@ TRAINING_DATA_DIR := ${CURDIR}/../trainingData
 METADATA_DIR := ${CURDIR}/../metadata
 PREPROCESS_DIR := ${CURDIR}/../preprocessedData
 MODELSTATE_DIR := ${CURDIR}/../modelState
-DOCKER_TAG := csc490-train-local
+DOCKER_REPO := docker.synapse.org/syn7506720/csc490-train
 DOCKER_NAME := csc490-training
 
 all: test-local-simple
 
 docker-build:
 	docker rm -f `docker ps -a -q  --filter name=$(DOCKER_NAME)`
-	docker build -t $(DOCKER_TAG) .
+	docker build -t $(DOCKER_REPO) .
 	-docker rmi $(docker images -f 'dangling=true' -q)
+
+docker-push: docker-build
+	docker push $(DOCKER_REPO)
 
 test-prep:
 	echo "Creating directory to store model state..."
@@ -31,4 +34,4 @@ test-local: test-prep docker-build
 		   -v $(METADATA_DIR):/metadata:ro \
 		   -v $(PREPROCESS_DIR):/preprocessedData \
 		   -v $(MODELSTATE_DIR):/modelState \
-		   $(DOCKER_TAG) /train.sh
+		   $(DOCKER_REPO) /train.sh
