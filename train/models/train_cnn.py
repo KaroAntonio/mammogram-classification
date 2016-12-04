@@ -1,14 +1,10 @@
-import numpy as np
-
-import tensorflow as tf
-
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten
-from keras.layers import Convolution2D, MaxPooling2D
-from keras.utils import np_utils
 from keras import backend as K
+from keras.layers import Convolution2D, MaxPooling2D
+from keras.layers import Dense, Dropout, Activation, Flatten
+from keras.models import Sequential
+from keras.utils import np_utils
 
-from utils.loaders import *
+from train.utils.loaders import *
 
 np.random.seed(1337)
 

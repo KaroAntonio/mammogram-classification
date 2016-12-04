@@ -1,4 +1,8 @@
 FROM tschaffter/keras-gpu
-MAINTAINER Thomas Schaffter <thomas.schaffter@gmail.com>
+MAINTAINER James Yuan <jamesj.yuan@mail.utoronto.ca>
 
-# placeholder Dockerfile for creating the Docker training image
+WORKDIR /
+COPY train.sh .
+COPY train_mammo_vgg.py .
+COPY models .
+COPY utils .

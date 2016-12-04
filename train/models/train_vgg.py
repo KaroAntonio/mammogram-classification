@@ -5,18 +5,12 @@
 '''
 from __future__ import print_function
 
-import numpy as np
-import warnings
-
-from keras.models import Model
-from keras.layers import Flatten, Dense, Input
-from keras.layers import Convolution2D, MaxPooling2D
-from keras.preprocessing import image
-from keras.utils.layer_utils import convert_all_kernels_in_model
-from keras.utils.data_utils import get_file
 from keras import backend as K
+from keras.layers import Convolution2D, MaxPooling2D
+from keras.layers import Flatten, Dense, Input
+from keras.models import Model
 
-from utils.loaders import *
+from train.utils.loaders import *
 
 def VGG16(include_top=True, weights='imagenet',
           input_tensor=None):

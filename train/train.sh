@@ -1,3 +1,4 @@
 #!/bin/bash
 
-# entry point for running the training submission
+# entry point for training the model
+python3 train_mammo_vgg.py

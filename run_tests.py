@@ -1,4 +1,4 @@
-from utils.loaders import *
+from train.utils.loaders import *
 
 m_fid = 'data/exams_metadata_pilot.tsv'
 cw_fid = 'data/images_crosswalk_pilot.tsv'
