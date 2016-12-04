@@ -9,11 +9,14 @@ METADATA_DIR := ${CURDIR}/../metadata
 PREPROCESS_DIR := ${CURDIR}/../preprocessedData
 MODELSTATE_DIR := ${CURDIR}/../modelState
 DOCKER_TAG := csc490-train-local
+DOCKER_NAME := csc490-training
 
 all: test-local-simple
 
 docker-build:
+	docker rm -f `docker ps -a -q  --filter name=$(DOCKER_NAME)`
 	docker build -t $(DOCKER_TAG) .
+	-docker rmi $(docker images -f 'dangling=true' -q)
 
 test-prep:
 	echo "Creating directory to store model state..."

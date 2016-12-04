@@ -8,11 +8,14 @@ TRAINING_DATA_DIR := ${CURDIR}/../trainingData
 METADATA_DIR := ${CURDIR}/../metadata
 PREPROCESS_DIR := ${CURDIR}/../preprocessedData
 DOCKER_TAG := csc490-preprocess-local
+DOCKER_NAME := csc490-preprocessing
 
 all: test_local
 
 docker-build:
+	docker rm -f `docker ps -a -q  --filter name=$(DOCKER_NAME)`
 	docker build -t $(DOCKER_TAG) .
+	-docker rmi $(docker images -f 'dangling=true' -q)
 
 test-prep:
 	echo "Creating directory to store preprocessed data..."
