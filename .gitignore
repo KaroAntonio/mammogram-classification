@@ -4,3 +4,6 @@ preprocessedData/
 metadata/
 trainingData/
 .idea
+
+# Location where you can create your virtualenv
+pyenv/
