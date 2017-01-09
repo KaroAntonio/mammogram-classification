@@ -5,7 +5,7 @@ import os
 # Indicates whether we're in a local test environment or not.
 LOCAL_TEST = os.getenv('LOCAL_TEST', None) is not None
 
-DIR_PREFIX = '..' if LOCAL_TEST else ''
+DIR_PREFIX = '../..' if LOCAL_TEST else ''
 
 # Directory where raw training images are stored according to challenge guidelines.
 RAW_IMG_DIR = DIR_PREFIX + '/trainingData'

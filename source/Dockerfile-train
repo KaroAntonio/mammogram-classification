@@ -6,7 +6,7 @@ RUN pip install Pillow
 RUN pip install --upgrade keras
 
 WORKDIR /
-COPY train.sh .
+COPY train/train.sh .
 COPY train_mammo_vgg.py .
 COPY models /models
 COPY utils /utils

@@ -13,8 +13,8 @@ DOCKER_NAME := csc490-preprocessing
 all: test_local
 
 docker-build:
-	docker rm -f `docker ps -a -q  --filter name=$(DOCKER_NAME)`
-	docker build -t $(DOCKER_REPO) .
+	-docker rm -f `docker ps -a -q  --filter name=$(DOCKER_NAME)`
+	cd .. && docker build -f Dockerfile-preprocess -t $(DOCKER_REPO) .
 	-docker rmi $(docker images -f 'dangling=true' -q)
 
 docker-push: docker-build

@@ -3,6 +3,7 @@
 preprocessedData/
 metadata/
 trainingData/
+modelState/
 .idea
 
 # Location where you can create your virtualenv

@@ -1,3 +1,5 @@
+# WARNING: This file is not used in any docker image and likely doesn't work.
+
 from train.utils.loaders import *
 
 m_fid = 'data/exams_metadata_pilot.tsv'

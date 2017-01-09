@@ -21,5 +21,5 @@ RUN pip install --upgrade pip && \
     pip install pandas
 
 WORKDIR /
-COPY generate_image_labels.py .
-COPY preprocess.sh .
+COPY preprocess/generate_image_labels.py .
+COPY preprocess/preprocess.sh .

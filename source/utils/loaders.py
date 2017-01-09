@@ -1,3 +1,5 @@
+# WARNING: This file is not used in any Docker image and likely doesn't work.
+
 import collections
 import csv
 import os

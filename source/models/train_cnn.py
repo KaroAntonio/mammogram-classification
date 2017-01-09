@@ -1,10 +1,11 @@
+# WARNING: This file is not currently used in any Docker images and likely won't work.
+
 from keras import backend as K
 from keras.layers import Convolution2D, MaxPooling2D
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.models import Sequential
 from keras.utils import np_utils
-
-from train.utils.loaders import *
+import numpy as np
 
 np.random.seed(1337)
 

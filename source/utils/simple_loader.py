@@ -5,7 +5,7 @@ import csv
 import numpy as np
 from keras.preprocessing import image
 
-from utils.constants import PREPROCESS_DIR, PREPROCESS_IMG_DIR
+from constants import PREPROCESS_DIR, PREPROCESS_IMG_DIR
 
 
 def load_delim_txt(fid, delim, fieldnames):

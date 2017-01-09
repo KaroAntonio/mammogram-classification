@@ -14,8 +14,8 @@ DOCKER_NAME := csc490-training
 all: test-local-simple
 
 docker-build:
-	docker rm -f `docker ps -a -q  --filter name=$(DOCKER_NAME)`
-	docker build -t $(DOCKER_REPO) .
+	-docker rm -f `docker ps -a -q  --filter name=$(DOCKER_NAME)`
+	cd .. && docker build -f Dockerfile-train -t $(DOCKER_REPO) .
 	-docker rmi $(docker images -f 'dangling=true' -q)
 
 docker-push: docker-build
@@ -26,7 +26,7 @@ test-prep:
 	mkdir -p $(MODELSTATE_DIR)
 
 test-local-simple:
-	env LOCAL_TEST=1 python train_mammo_vgg.py
+	source ../../pyenv/bin/activate && env LOCAL_TEST=1 python ../train_mammo_vgg.py
 
 test-local: test-prep docker-build
 	docker run -d -P --name csc490-training \

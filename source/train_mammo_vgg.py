@@ -1,11 +1,12 @@
 from __future__ import print_function
+
 import os
 
 import numpy as np
-from models.mammo_vgg import VGG16
 import utils.simple_loader as sl
-import utils.constants as c
 
+import utils.constants as c
+from models.mammo_vgg import VGG16
 
 if __name__ == '__main__':
     model = VGG16(include_top=True, weights=None)
