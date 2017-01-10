@@ -12,3 +12,4 @@ DEPENDENCIES
                                         root folder of the repo, activate it and 'pip install -r requirements.txt')
 * ImageMagick
 * parallel (aka gnu-parallel)
+* gnu-sed (only if you're running macOS)

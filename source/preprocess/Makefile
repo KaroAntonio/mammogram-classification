@@ -1,8 +1,8 @@
 # Makefile to test preprocessing locally
 # Preconditions:
 #     You must have docker installed
-#     ../trainingData directory must exist and contain all of the extracted DCM files
-#     ../metadata directory must exist and contain exams_metadata.tsv and images_crosswalk.tsv
+#     ../../trainingData directory must exist and contain all of the extracted DCM files
+#     ../../metadata directory must exist and contain exams_metadata.tsv and images_crosswalk.tsv
 
 TRAINING_DATA_DIR := ${CURDIR}/../../trainingData
 METADATA_DIR := ${CURDIR}/../../metadata
@@ -10,7 +10,7 @@ PREPROCESS_DIR := ${CURDIR}/../../preprocessedData
 DOCKER_REPO := docker.synapse.org/syn7506720/csc490-preprocess
 DOCKER_NAME := csc490-preprocessing
 
-all: test_local
+all: test-local-simple
 
 docker-build:
 	-docker rm -f `docker ps -a -q  --filter name=$(DOCKER_NAME)` 2> /dev/null || true
@@ -24,7 +24,10 @@ test-prep:
 	echo "Creating directory to store preprocessed data..."
 	mkdir -p $(PREPROCESS_DIR)
 
-test_local: test-prep docker-build
+test-local-simple: test-prep
+	env LOCAL_TEST=1 ./preprocess.sh
+
+test-local: test-prep docker-build
 	docker run -d -P --name csc490-preprocessing \
 		   -v $(TRAINING_DATA_DIR):/trainingData:ro \
 		   -v $(METADATA_DIR):/metadata:ro \
