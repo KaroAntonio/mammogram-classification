@@ -1,3 +1,5 @@
+# WARNING: This file is not currently used in any Docker images and likely won't work.
+
 '''
 ns a simple convnet on the MNIST dataset.
 Gets to 99.25% test accuracy after 12 epochs

@@ -4,6 +4,7 @@ MAINTAINER James Yuan <jamesj.yuan@mail.utoronto.ca>
 RUN pip install --upgrade pip
 RUN pip install Pillow
 RUN pip install --upgrade keras
+RUN pip install h5py
 
 WORKDIR /
 COPY train/train.sh .

@@ -5,8 +5,10 @@ https://papers.nips.cc/paper/5542-recurrent-models-of-visual-attention.pdf
 set tensorflow backend
 http://ermaker.github.io/blog/2016/06/22/get-started-with-keras-for-beginners-tensorflow-backend.html
 
-ISSUES
-Class distribution
-	~ for the first 400 imgs, the class distribution is:
-		positive: 2 ....?!?!?!
-		negative: 497     .... so all
+DEPENDENCIES
+
+* python 2.7
+* python libraries in requirements.txt (create a virtualenv in a folder named 'pyenv' in the
+                                        root folder of the repo, activate it and 'pip install -r requirements.txt')
+* ImageMagick
+* parallel (aka gnu-parallel)
