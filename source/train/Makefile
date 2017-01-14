@@ -26,7 +26,7 @@ test-prep:
 	mkdir -p $(MODELSTATE_DIR)
 
 test-local-simple: test-prep
-	source ../../pyenv/bin/activate && env LOCAL_TEST=1 python ../train_mammo_vgg.py
+	source ${CURDIR}/../../pyenv/bin/activate && env LOCAL_TEST=1 python ../train_mammo_vgg.py
 
 test-local: test-prep docker-build
 	docker run -d -P --name csc490-training \

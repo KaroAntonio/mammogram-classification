@@ -25,7 +25,7 @@ test-prep:
 	mkdir -p $(PREPROCESS_DIR)
 
 test-local-simple: test-prep
-	env LOCAL_TEST=1 ./preprocess.sh
+	env LOCAL_TEST=1 ${CURDIR}/preprocess.sh
 
 test-local: test-prep docker-build
 	docker run -d -P --name csc490-preprocessing \
