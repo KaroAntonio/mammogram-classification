@@ -35,7 +35,8 @@ if __name__ == '__main__':
     model.fit(sl.imgs, sl.labels, batch_size=batch_size, nb_epoch=nb_epoch,
               verbose=1, validation_split=train_split)
 
-    model.save(c.MODELSTATE_DIR + '/trained.hdf')
+    model.save(c.MODELSTATE_DIR + '/', c.MODEL_FILENAME)
+    model.save_weights(c.MODELSTATE_DIR + '/' + c.WEIGHTS_FILENAME)
 
     # score = model.evaluate(test['x'], test['y'], verbose=0)
 

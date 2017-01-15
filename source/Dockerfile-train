@@ -1,13 +1,13 @@
 FROM tschaffter/keras-gpu
 MAINTAINER James Yuan <jamesj.yuan@mail.utoronto.ca>
 
-RUN pip install --upgrade pip
-RUN pip install Pillow
-RUN pip install --upgrade keras
-RUN pip install h5py
-
 WORKDIR /
 COPY train/train.sh .
 COPY train_mammo_vgg.py .
 COPY models /models
 COPY utils /utils
+COPY requirements.txt .
+
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+

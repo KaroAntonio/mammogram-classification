@@ -4,7 +4,8 @@ preprocessedData/
 metadata/
 trainingData/
 modelState/
+output
 .idea
-
+do
 # Location where you can create your virtualenv
 pyenv/
