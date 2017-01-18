@@ -26,6 +26,9 @@ else
 	SED='sed'
 fi
 
+# Convert DICOM to 8-bit RGB PNG
+CONVERT_OPTIONS="-depth 8 -resize 224x224! -colorspace sRGB"
+
 IMAGES_DIRECTORY="${PREFIX}/trainingData"
 EXAMS_METADATA_FILENAME="${PREFIX}/metadata/exams_metadata.tsv"
 IMAGES_CROSSWALK_FILENAME="${PREFIX}/metadata/images_crosswalk.tsv"
@@ -39,7 +42,7 @@ echo "image labels" $IMAGE_LABELS_FILENAME
 mkdir -p $PREPROCESS_IMAGES_DIRECTORY
 
 echo "Resizing and converting $(find $IMAGES_DIRECTORY -name "*.dcm" | wc -l) DICOM images to PNG format"
-find $IMAGES_DIRECTORY/ -name "*.dcm" | parallel --will-cite "convert {} -resize 224x224! $PREPROCESS_IMAGES_DIRECTORY/{/.}.png" # faster than mogrify
+find $IMAGES_DIRECTORY/ -name "*.dcm" | parallel --will-cite "convert {} ${CONVERT_OPTIONS} $PREPROCESS_IMAGES_DIRECTORY/{/.}.png" # faster than mogrify
 echo "PNG images have been successfully saved to $PREPROCESS_IMAGES_DIRECTORY/."
 
 echo "Generating image labels to $IMAGE_LABELS_FILENAME"

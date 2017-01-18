@@ -3,6 +3,7 @@
 preprocessedData/
 metadata/
 trainingData/
+inferenceData/
 modelState/
 output
 .idea
