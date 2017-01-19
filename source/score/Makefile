@@ -5,9 +5,8 @@
 #     ../../preprocessedData/metadata must exist and contain image_labels.txt
 #     ../../modelState must exist and must contain trained.h5 and weights.h5
 
-TRAINING_DATA_DIR := ${CURDIR}/../../trainingData
+INFERENCE_DATA_DIR := ${CURDIR}/../../inferenceData
 METADATA_DIR := ${CURDIR}/../../metadata
-PREPROCESS_DIR := ${CURDIR}/../../preprocessedData
 MODELSTATE_DIR := ${CURDIR}/../../modelState
 OUTPUT_DIR := ${CURDIR}/../../output
 DOCKER_REPO := docker.synapse.org/syn7506720/csc490-score
@@ -32,9 +31,8 @@ test-local-simple: test-prep
 
 test-local: test-prep docker-build
 	docker run -d -P --name $(DOCKER_NAME) \
-		   -v $(TRAINING_DATA_DIR):/trainingData:ro \
+		   -v $(INFERENCE_DATA_DIR):/inferenceData:ro \
 		   -v $(METADATA_DIR):/metadata:ro \
-		   -v $(PREPROCESS_DIR):/preprocessedData \
-		   -v $(MODELSTATE_DIR):/modelState \
+		   -v $(MODELSTATE_DIR):/modelState:ro \
 		   -v $(OUTPUT_DIR):/output \
 		   $(DOCKER_REPO) /sc1_infer.sh

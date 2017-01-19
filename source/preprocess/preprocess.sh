@@ -47,7 +47,7 @@ echo "PNG images have been successfully saved to $PREPROCESS_IMAGES_DIRECTORY/."
 
 echo "Generating image labels to $IMAGE_LABELS_FILENAME"
 python generate_image_labels.py $EXAMS_METADATA_FILENAME $IMAGES_CROSSWALK_FILENAME $IMAGE_LABELS_FILENAME
-# Replace the .dcm extension to .png
+# Replace the .dcm extension with .png
 ${SED} -i 's/.dcm/.png/g' $IMAGE_LABELS_FILENAME
 
 echo "Done"

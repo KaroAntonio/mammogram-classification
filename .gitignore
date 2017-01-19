@@ -3,6 +3,7 @@
 preprocessedData/
 metadata/
 trainingData/
+inferenceData
 inferenceData/
 modelState/
 output

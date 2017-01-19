@@ -15,8 +15,9 @@ if __name__ == '__main__':
     seed = os.getenv('RANDOM_SEED', '1337')
     np.random.seed(int(seed))
 
-    train_split = 0.3
-    batch_size = 5
+    batch_size = 10
+    nb_epoch = 10
+
     # number of convolutional filters to use
     nb_filters = 32
     # size of pooling area for max pooling
@@ -24,21 +25,18 @@ if __name__ == '__main__':
     # convolution kernel size
     kernel_size = (3, 3)
 
-    nb_classes = 2
-    nb_epoch = 12
-
-    sl = sl.SimpleLoader()
+    creator = sl.PNGBatchGeneratorCreator(c.PREPROCESS_IMG_DIR + '/', batch_size=batch_size)
 
     model.compile(optimizer='adam', loss='binary_crossentropy',
                   metrics=['binary_accuracy', 'precision', 'recall'])
     model.summary()
-    model.fit(sl.imgs, sl.labels, batch_size=batch_size, nb_epoch=nb_epoch,
-              verbose=1, validation_split=train_split)
 
-    model.save(c.MODELSTATE_DIR + '/', c.MODEL_FILENAME)
+    # Number of samples per epoch has to be a multiple of batch size. Thus we'll use the largest
+    # multiple of batch size possible. This wastes at most batch size amount of samples.
+    num_training_samples = creator.total_training_samples() // batch_size * batch_size
+    model.fit_generator(creator.get_generator('training'), num_training_samples,
+                        nb_epoch, validation_data=creator.get_generator('validation'),
+                        nb_val_samples=creator.total_validation_samples())
+
+    model.save(c.MODELSTATE_DIR + '/' + c.MODEL_FILENAME)
     model.save_weights(c.MODELSTATE_DIR + '/' + c.WEIGHTS_FILENAME)
-
-    # score = model.evaluate(test['x'], test['y'], verbose=0)
-
-    # print('Test loss:', score[0])
-    # print('Test accuracy:', score[1])

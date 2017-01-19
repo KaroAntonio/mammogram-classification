@@ -14,7 +14,7 @@ all: test-local-simple
 
 docker-build:
 	-docker rm -f `docker ps -a -q  --filter name=$(DOCKER_NAME)` 2> /dev/null || true
-	cd .. && docker build -f Dockerfile-train -t $(DOCKER_REPO) .
+	cd .. && docker build -f Dockerfile-preprocess -t $(DOCKER_REPO) .
 	-docker rmi $$(docker images -f 'dangling=true' -q) 2> /dev/null || true
 
 docker-push: docker-build
