@@ -1,6 +1,5 @@
 from __future__ import print_function
 
-import csv
 import os
 import subprocess
 import StringIO
@@ -11,38 +10,6 @@ import keras.preprocessing.image as kimage
 from PIL import Image
 
 import constants as c
-
-
-def load_delim_txt(fid, delim, fieldnames):
-    f = open(fid, 'r')
-    reader = csv.DictReader(f, delimiter=delim, fieldnames=fieldnames)
-    d = []
-    for row in reader:
-        d += [row]
-    f.close()
-    return d
-
-
-class SimpleLoader:
-    """
-    Used for loading preprocessed PNG files.
-    """
-
-    def __init__(self):
-        labelled = load_delim_txt(c.PREPROCESS_DIR + '/metadata/image_labels.txt',
-                                  ' ', ('img', 'label'))
-
-        self.imgs = []
-        self.labels = []
-        for pair in labelled:
-            loaded = kimage.load_img(c.PREPROCESS_IMG_DIR + '/' + pair['img'], target_size=(224, 224))
-            # Loads the image with the correct dim_ordering for the backend by default.
-            loaded = kimage.img_to_array(loaded)
-            self.imgs.append(loaded)
-            self.labels.append(pair['label'])
-
-        self.imgs = np.array(self.imgs)
-        self.labels = np.array(self.labels)
 
 
 class BatchGeneratorCreator(object):
@@ -59,9 +26,41 @@ class BatchGeneratorCreator(object):
         self.validation_split = validation_split
         self.batch_size = batch_size
 
-        fields = ['filename', 'cancer']
-        self.img_metadata = pd.read_csv(c.IMAGES_CROSSWALK_FILEPATH, sep="\t",
+        fields = ['subjectId', 'examIndex', 'laterality', 'filename']
+        self.img_metadata = pd.read_csv(c.IMAGES_CROSSWALK_FILEPATH, sep='\t',
                                         na_values='.', usecols=fields)
+        self.img_metadata.subjectId = self.img_metadata.subjectId.astype(str)
+        self.img_metadata.examIndex = self.img_metadata.examIndex.astype(int)
+
+        # Set placeholder value of 0 for cancer status of all rows. This will
+        # be filled in correctly if the exams metadata file is present.
+        self.img_metadata['cancer'] = 0
+
+        # This file is not present for the scoring docker image but it's
+        # not needed since we don't need to know the cancer status of a
+        # mammogram for the scoring phase.
+        if os.path.exists(c.EXAMS_METADATA_FILEPATH):
+            # Need to find the cancer labels from the exams metadata
+            exam_fields = ['subjectId', 'examIndex', 'cancerL', 'cancerR']
+            ex = pd.read_csv(c.EXAMS_METADATA_FILEPATH, sep='\t',
+                             na_values='.', usecols=exam_fields)
+            ex.cancerL = ex.cancerL.fillna(0)
+            ex.cancerR = ex.cancerR.fillna(0)
+            ex.subjectId = ex.subjectId.astype(str)
+            ex.examIndex = ex.examIndex.astype(int)
+            ex.cancerL = ex.cancerL.astype(int)
+            ex.cancerR = ex.cancerR.astype(int)
+
+            for index, img_row in self.img_metadata.iterrows():
+                exams_row = ex.loc[(ex.subjectId == img_row['subjectId']) &
+                                   (ex.examIndex == img_row['examIndex']),
+                                   'cancerL':'cancerR']
+
+                if exams_row.iloc[0]['cancerL'] == 1 and img_row['laterality'] == 'L':
+                    self.img_metadata.set_value(index, 'cancer', 1)
+                elif exams_row.iloc[0]['cancerR'] == 1 and img_row['laterality'] == 'R':
+                    self.img_metadata.set_value(index, 'cancer', 1)
+
         self.training_metadata = self.img_metadata[:self.total_training_samples()]
         self.validation_metadata = self.img_metadata[self.total_training_samples():]
 
