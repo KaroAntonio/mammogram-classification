@@ -2,3 +2,4 @@
 
 # entry point for training the model
 python train_mammo_vgg.py
+#python train_mammo_resnet.py
