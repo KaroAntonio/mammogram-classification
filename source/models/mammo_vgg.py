@@ -114,12 +114,12 @@ def VGG16(include_top=True, weights='imagenet', input_tensor=None):
     if include_top:
         # Classification block
         x = Flatten(name='flatten')(x)
-        x = Dense(16, name='fc1')(x)
-        x = PReLU()(x)
-        x = Dense(16, name='fc2')(x)
-        x = PReLU()(x)
-        x = Dense(32, activation='softmax')(x)
-        x = PReLU()(x)
+        # x = Dense(16, name='fc1')(x)
+        # x = PReLU()(x)
+        # x = Dense(16, name='fc2')(x)
+        # x = PReLU()(x)
+        # x = Dense(32, activation='softmax')(x)
+        # x = PReLU()(x)
         x = Dense(1, activation='sigmoid', name='predictions')(x)
 
     # Create model
