@@ -17,12 +17,14 @@ if __name__ == '__main__':
     generator = creator.get_generator('all', False)
 
     images_fields = ['subjectId', 'laterality']
-    images_meta = pd.read_csv(c.IMAGES_CROSSWALK_FILEPATH, sep="\t", na_values='.', usecols=images_fields)
+    images_meta = pd.read_csv(c.IMAGES_CROSSWALK_FILEPATH, sep='\t', na_values='.', usecols=images_fields)
+    images_meta.subjectId = images_meta.subjectId.astype(str)
+    images_meta.laterality = images_meta.laterality.astype(str)
 
     # Need to temporarily keep multiple confidence scores for each subjectId and laterality as there
     # could be multiple mammograms per breast for a subject.
     results = pd.DataFrame(columns=['subjectId', 'laterality', 'confidence_sum', 'num_scores'])
-    results.subjectId = results.subjectId.astype(int)
+    results.subjectId = results.subjectId.astype(str)
     results.laterality = results.laterality.astype(str)
     results.num_scores = results.num_scores.astype(int)
     curr_index = 0
@@ -67,7 +69,8 @@ if __name__ == '__main__':
     # Instead of just averaging the scores for each subject and laterality we could take
     # the max predicted score so we output 1 when at least one mammogram shows potential to show
     # breast cancer.
-    results['confidence'] = results['confidence_sum'] / results['num_scores']
+    # Currently our model inverts its outputs so we have to invert it back for prediction.
+    results['confidence'] = 1 - (results['confidence_sum'] / results['num_scores'])
     print(results)
 
     # Ready to output the relevant columns to tsv file now.

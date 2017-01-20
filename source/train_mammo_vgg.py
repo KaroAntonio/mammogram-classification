@@ -24,9 +24,9 @@ if __name__ == '__main__':
     pool_size = (2, 2)
     # convolution kernel size
     kernel_size = (3, 3)
-
-    training_set_ratio = 0.05
-
+    # actual training set contains 500k+ images which would take
+    # too long if we were to use the whole set.
+    training_set_ratio = 1.0 if c.LOCAL_TEST else 0.05
 
     creator = sl.PNGBatchGeneratorCreator(c.PREPROCESS_IMG_DIR + '/', batch_size=batch_size)
 
@@ -36,36 +36,21 @@ if __name__ == '__main__':
 
     # Number of samples per epoch has to be a multiple of batch size. Thus we'll use the largest
     # multiple of batch size possible. This wastes at most batch size amount of samples.
-    num_training_samples = creator.total_training_samples() // batch_size * batch_size * training_set_ratio
+    num_training_samples = (creator.total_training_samples() * training_set_ratio) // batch_size * batch_size
     history = model.fit_generator(creator.get_generator('training'), num_training_samples,
-                        nb_epoch, validation_data=creator.get_generator('validation'),
-                        nb_val_samples=creator.total_validation_samples())
+                                  nb_epoch, validation_data=creator.get_generator('validation'),
+                                  nb_val_samples=creator.total_validation_samples())
 
     # Save metrics from the training process for later visualization
-    with open('plot.txt', 'a') as f:
-        f.write('train binary accuracy\n')
-        f.write(', '.join(str(x) for x in history.history['binary_accuracy']))
-        f.write('\n')
-        f.write('validation binary accuracy\n')
-        f.write(', '.join(str(x) for x in history.history['val_binary_accuracy']))
-        f.write('\n\n\n')
-        f.write('train recall\n')
-        f.write(', '.join(str(x) for x in history.history['recall']))
-        f.write('\n')
-        f.write('validation recall\n')
-        f.write(', '.join(str(x) for x in history.history['val_recall']))
-        f.write('\n\n\n')
-        f.write('train precision\n')
-        f.write(', '.join(str(x) for x in history.history['precision']))
-        f.write('\n')
-        f.write('validation precision\n')
-        f.write(', '.join(str(x) for x in history.history['val_precision']))
-        f.write('\n\n\n')
-        f.write('train fmeasure\n')
-        f.write(', '.join(str(x) for x in history.history['fmeasure']))
-        f.write('\n')
-        f.write('validation fmeasure\n')
-        f.write(', '.join(str(x) for x in history.history['val_fmeasure']))
+    metrics = ['binary_accuracy', 'recall', 'precision', 'fmeasure']
+    with open(c.MODELSTATE_DIR + '/plot.txt', 'w') as f:
+        for metric in metrics:
+            f.write('train {}\n'.format(metric))
+            f.write(', '.join(str(x) for x in history.history[metric]))
+            f.write('\n')
+            f.write('validation {}\n'.format(metric))
+            f.write(', '.join(str(x) for x in history.history['val_' + metric]))
+            f.write('\n\n\n')
 
     model.save(c.MODELSTATE_DIR + '/' + c.MODEL_FILENAME)
     model.save_weights(c.MODELSTATE_DIR + '/' + c.WEIGHTS_FILENAME)

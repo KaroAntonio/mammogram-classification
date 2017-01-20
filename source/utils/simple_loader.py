@@ -26,11 +26,11 @@ class BatchGeneratorCreator(object):
         self.validation_split = validation_split
         self.batch_size = batch_size
 
-        fields = ['subjectId', 'examIndex', 'laterality', 'filename']
         self.img_metadata = pd.read_csv(c.IMAGES_CROSSWALK_FILEPATH, sep='\t',
-                                        na_values='.', usecols=fields)
+                                        na_values='.')
         self.img_metadata.subjectId = self.img_metadata.subjectId.astype(str)
-        self.img_metadata.examIndex = self.img_metadata.examIndex.astype(int)
+        if 'examIndex' in self.img_metadata:
+            self.img_metadata.examIndex = self.img_metadata.examIndex.astype(int)
 
         # Set placeholder value of 0 for cancer status of all rows. This will
         # be filled in correctly if the exams metadata file is present.
@@ -39,7 +39,7 @@ class BatchGeneratorCreator(object):
         # This file is not present for the scoring docker image but it's
         # not needed since we don't need to know the cancer status of a
         # mammogram for the scoring phase.
-        if os.path.exists(c.EXAMS_METADATA_FILEPATH):
+        if 'examIndex' in self.img_metadata and os.path.exists(c.EXAMS_METADATA_FILEPATH):
             # Need to find the cancer labels from the exams metadata
             exam_fields = ['subjectId', 'examIndex', 'cancerL', 'cancerR']
             ex = pd.read_csv(c.EXAMS_METADATA_FILEPATH, sep='\t',
