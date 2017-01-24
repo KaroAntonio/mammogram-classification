@@ -49,9 +49,9 @@ def VGG16(include_top=True, weights='imagenet', input_tensor=None):
     x = BatchNormalization()(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='block1_pool')(x)
 
-    x = Convolution2D(64, 3, 3, border_mode='same', name='block1_conv2')(x)
+    x = Convolution2D(32, 3, 3, border_mode='same', name='block1_conv2')(x)
     x = PReLU()(x)
-    # x = BatchNormalization()(x)
+    x = BatchNormalization()(x)
 
     # x = MaxPooling2D((2, 2), strides=(2, 2), name='block1_pool')(x)
     #

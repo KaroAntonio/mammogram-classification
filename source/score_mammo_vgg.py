@@ -10,9 +10,8 @@ if __name__ == '__main__':
 
     # Load up the trained model and evaluate it.
     model = km.load_model(c.MODELSTATE_DIR + '/' + c.MODEL_FILENAME)
-    model.load_weights(c.MODELSTATE_DIR + '/' + c.WEIGHTS_FILENAME)
 
-    batch_size = 150
+    batch_size = 500
     creator = sl.DICOMBatchGeneratorCreator(c.INFERENCE_IMG_DIR + '/', batch_size=batch_size)
     generator = creator.get_generator('all', False)
 
@@ -69,8 +68,7 @@ if __name__ == '__main__':
     # Instead of just averaging the scores for each subject and laterality we could take
     # the max predicted score so we output 1 when at least one mammogram shows potential to show
     # breast cancer.
-    # Currently our model inverts its outputs so we have to invert it back for prediction.
-    results['confidence'] = 1 - (results['confidence_sum'] / results['num_scores'])
+    results['confidence'] = results['confidence_sum'] / results['num_scores']
     print(results)
 
     # Ready to output the relevant columns to tsv file now.
