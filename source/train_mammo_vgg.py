@@ -21,6 +21,7 @@ if __name__ == '__main__':
     batch_size = 32
     nb_epoch = 25
     validation_split = 0.25
+    negative_ratio = 2.0
 
     # number of convolutional filters to use
     nb_filters = 32
@@ -42,12 +43,18 @@ if __name__ == '__main__':
                   metrics=['binary_accuracy', 'precision', 'recall', 'fmeasure'])
     model.summary()
 
+    # Get a balanced dataset with a negative:positive ratio of approximately negative_ratio
+    balanced = creator.balance_dataset(creator.get_dataset('training'), negative_ratio=negative_ratio)
+
     # Number of samples per epoch has to be a multiple of batch size. Thus we'll use the largest
     # multiple of batch size possible. This wastes at most batch size amount of samples.
     # Also limit training to 20000 images max due to time constraints.
-    num_training_samples = min(20000, creator.total_training_samples()) // batch_size * batch_size
+    num_training_samples = min(20000, len(balanced.index)) // batch_size * batch_size
     num_validation_samples = num_training_samples * validation_split
-    history = model.fit_generator(creator.get_generator('training'), num_training_samples,
+
+    print('Training on set of {} images with a negative:positive ratio of approximately {}'.format(len(balanced.index),
+                                                                                                   negative_ratio))
+    history = model.fit_generator(creator.get_generator(dataset=balanced), num_training_samples,
                                   nb_epoch, validation_data=creator.get_generator('validation'),
                                   nb_val_samples=num_validation_samples,
                                   callbacks=[early_stopping, model_checkpoint])

@@ -73,16 +73,32 @@ class BatchGeneratorCreator(object):
     def total_validation_samples(self):
         return self.total_samples() - self.total_training_samples()
 
-    def _get_dataset(self, dataset):
+    def get_dataset(self, dataset):
+        if not isinstance(dataset, str):
+            return dataset
+
         if dataset == 'all':
             return self.img_metadata
         elif dataset == 'training':
             return self.training_metadata
-        else:
+        elif dataset == 'validation':
             return self.validation_metadata
 
+    @staticmethod
+    def balance_dataset(orig_dataset, negative_ratio=2.0):
+        positives = orig_dataset[orig_dataset.cancer == 1]
+        negatives = orig_dataset[orig_dataset.cancer == 0]
+
+        # Try to make a balanced dataset with the specified negative ratio
+        # if there are enough samples.
+        num_negatives = min(len(negatives.index), int(negative_ratio * len(positives.index)))
+        balanced = pd.concat([positives, negatives[:num_negatives]])
+
+        # Shuffle the balanced dataframe so not all the positives are together.
+        return balanced.sample(frac=1)
+
     def get_generator(self, dataset='all', train_mode=True):
-        metadata_frame = self._get_dataset(dataset)
+        metadata_frame = self.get_dataset(dataset)
 
         curr_idx = 0
         dataset_len = len(metadata_frame.index)
