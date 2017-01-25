@@ -34,7 +34,7 @@ class BatchGeneratorCreator(object):
 
         # Set placeholder value of 0 for cancer status of all rows. This will
         # be filled in correctly if the exams metadata file is present.
-        self.img_metadata['cancer'] = 1
+        self.img_metadata['cancer'] = 0
 
         # This file is not present for the scoring docker image but it's
         # not needed since we don't need to know the cancer status of a
@@ -44,8 +44,8 @@ class BatchGeneratorCreator(object):
             exam_fields = ['subjectId', 'examIndex', 'cancerL', 'cancerR']
             ex = pd.read_csv(c.EXAMS_METADATA_FILEPATH, sep='\t',
                              na_values='.', usecols=exam_fields)
-            ex.cancerL = ex.cancerL.fillna(1)
-            ex.cancerR = ex.cancerR.fillna(1)
+            ex.cancerL = ex.cancerL.fillna(0)
+            ex.cancerR = ex.cancerR.fillna(0)
             ex.subjectId = ex.subjectId.astype(str)
             ex.examIndex = ex.examIndex.astype(int)
             ex.cancerL = ex.cancerL.astype(int)
@@ -57,9 +57,9 @@ class BatchGeneratorCreator(object):
                                    'cancerL':'cancerR']
 
                 if exams_row.iloc[0]['cancerL'] == 1 and img_row['laterality'] == 'L':
-                    self.img_metadata.set_value(index, 'cancer', 0)
+                    self.img_metadata.set_value(index, 'cancer', 1)
                 elif exams_row.iloc[0]['cancerR'] == 1 and img_row['laterality'] == 'R':
-                    self.img_metadata.set_value(index, 'cancer', 0)
+                    self.img_metadata.set_value(index, 'cancer', 1)
 
         self.training_metadata = self.img_metadata[:self.total_training_samples()]
         self.validation_metadata = self.img_metadata[self.total_training_samples():]
@@ -73,16 +73,32 @@ class BatchGeneratorCreator(object):
     def total_validation_samples(self):
         return self.total_samples() - self.total_training_samples()
 
-    def _get_dataset(self, dataset):
+    def get_dataset(self, dataset):
+        if not isinstance(dataset, str):
+            return dataset
+
         if dataset == 'all':
             return self.img_metadata
         elif dataset == 'training':
             return self.training_metadata
-        else:
+        elif dataset == 'validation':
             return self.validation_metadata
 
+    @staticmethod
+    def balance_dataset(orig_dataset, negative_ratio=2.0):
+        positives = orig_dataset[orig_dataset.cancer == 1]
+        negatives = orig_dataset[orig_dataset.cancer == 0]
+
+        # Try to make a balanced dataset with the specified negative ratio
+        # if there are enough samples.
+        num_negatives = min(len(negatives.index), int(negative_ratio * len(positives.index)))
+        balanced = pd.concat([positives, negatives[:num_negatives]])
+
+        # Shuffle the balanced dataframe so not all the positives are together.
+        return balanced.sample(frac=1)
+
     def get_generator(self, dataset='all', train_mode=True):
-        metadata_frame = self._get_dataset(dataset)
+        metadata_frame = self.get_dataset(dataset)
 
         curr_idx = 0
         dataset_len = len(metadata_frame.index)
