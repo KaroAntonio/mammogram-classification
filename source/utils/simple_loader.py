@@ -11,6 +11,8 @@ from PIL import Image
 
 import constants as c
 
+from keras.preprocessing.image import ImageDataGenerator
+
 
 class BatchGeneratorCreator(object):
     """
@@ -19,6 +21,15 @@ class BatchGeneratorCreator(object):
     """
 
     def __init__(self, imgs_dir, validation_split=0.25, batch_size=500):
+        self.image_generator = ImageDataGenerator(width_shift_range=0.1,
+                                                  height_shift_range=0.1,
+                                                  shear_range=0.05,
+                                                  zoom_range=[0.05, 0.1],
+                                                  horizontal_flip=True,
+                                                  vertical_flip=True)
+
+
+
         # imgs_dir should be the path to directory containing the image files,
         # including a trailing slash.
         self.imgs_dir = imgs_dir
@@ -140,8 +151,14 @@ class BatchGeneratorCreator(object):
                 if curr_idx >= dataset_len:
                     curr_idx = 0
 
+
+
             if train_mode:
-                yield x, y
+                # Generate extra images only when training
+                self.image_generator.fit(x)
+                for X_batch, y_batch in self.image_generator.flow(x, y, batch_size=self.batch_size):
+                    yield X_batch, y_batch
+                # yield x, y
             else:
                 yield x
 
