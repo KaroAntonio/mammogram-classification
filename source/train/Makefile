@@ -12,6 +12,9 @@ DOCKER_REPO := docker.synapse.org/syn7506720/csc490-train
 DOCKER_NAME := csc490-training
 DOCKER_REPO_RELU := docker.synapse.org/syn7506720/csc490-train-relu
 DOCKER_NAME_RELU := csc490-training-relu
+DOCKER_REPO_RESNET := docker.synapse.org/syn7506720/csc490-train-resnet
+DOCKER_NAME_RESNET := csc490-training-resnet
+
 
 all: test-local-simple
 
@@ -38,6 +41,8 @@ test-local: test-prep docker-build
 		   -v $(MODELSTATE_DIR):/modelState \
 		   $(DOCKER_REPO) /train.sh
 
+# VGG-ReLU
+
 docker-build-relu:
 	-docker rm -f `docker ps -a -q --filter name=$(DOCKER_NAME_RELU)` 2> /dev/null || true
 	cd .. && docker build -f Dockerfile-train-relu -t $(DOCKER_REPO_RELU) .
@@ -57,3 +62,24 @@ test-local-relu: test-prep docker-build-relu
 		   -v $(PREPROCESS_DIR):/preprocessedData \
 		   -v $(MODELSTATE_DIR):/modelState \
 		   $(DOCKER_REPO_RELU) /train.sh
+
+# ResNet
+
+docker-build-resnet:
+	-docker rm -f `docker ps -a -q --filter name=$(DOCKER_NAME_RESNET)` 2> /dev/null || true
+	cd .. && docker build -f Dockerfile-train-resnet -t $(DOCKER_REPO_RESNET) .
+	-docker rmi $$(docker images -f 'dangling=true' -q) 2> /dev/null || true
+
+docker-push-resnet: docker-build-resnet
+	docker push $(DOCKER_REPO_RESNET)
+
+test-local-simple-resnet: test-prep
+	source ${CURDIR}/../../pyenv/bin/activate && env LOCAL_TEST=1 python ${CURDIR}/../train_mammo_resnet.py
+
+test-local-resnet: test-prep docker-build-resnet
+	docker run -d -P --name $(DOCKER_NAME_RESNET) \
+		   -v $(TRAINING_DATA_DIR):/trainingData:ro \
+		   -v $(METADATA_DIR):/metadata:ro \
+		   -v $(PREPROCESS_DIR):/preprocessedData \
+		   -v $(MODELSTATE_DIR):/modelState \
+		   $(DOCKER_REPO_RESNET) /train.sh

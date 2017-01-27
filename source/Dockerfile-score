@@ -11,5 +11,5 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 COPY score/sc1_infer.sh .
-COPY score_mammo_vgg.py .
+COPY score_mammo.py .
 COPY utils /utils

@@ -27,7 +27,7 @@ test-prep:
 	mkdir -p $(OUTPUT_DIR)
 
 test-local-simple: test-prep
-	source ${CURDIR}/../../pyenv/bin/activate && env LOCAL_TEST=1 python ${CURDIR}/../score_mammo_vgg.py
+	source ${CURDIR}/../../pyenv/bin/activate && env LOCAL_TEST=1 python ${CURDIR}/../score_mammo.py
 
 test-local: test-prep docker-build
 	docker run -d -P --name $(DOCKER_NAME) \
