@@ -1,0 +1,12 @@
+FROM tschaffter/keras-gpu
+MAINTAINER James Yuan <jamesj.yuan@mail.utoronto.ca>
+
+WORKDIR /
+COPY requirements.txt .
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+COPY train/train_relu.sh train.sh
+COPY train_mammo_vgg.py .
+COPY models /models
+COPY utils /utils

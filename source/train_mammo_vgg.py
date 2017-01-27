@@ -1,22 +1,18 @@
 from __future__ import print_function
 
-USE_PRELU = True
-
-
 import os
 
+from keras.callbacks import EarlyStopping, ModelCheckpoint
 import numpy as np
-import utils.simple_loader as sl
 
+import utils.simple_loader as sl
 import utils.constants as c
 
-if USE_PRELU:
-    from models.mammo_vgg import VGG16
-else:
+USE_RELU = os.getenv('USE_RELU', False)
+if USE_RELU:
     from models.mammo_vgg_relu import VGG16
-
-from keras.callbacks import EarlyStopping, ModelCheckpoint
-
+else:
+    from models.mammo_vgg import VGG16
 
 if __name__ == '__main__':
     model = VGG16(include_top=True, weights=None)
@@ -28,7 +24,10 @@ if __name__ == '__main__':
     batch_size = 32
     nb_epoch = 25
     validation_split = 0.25
-    negative_ratio = 2.0
+    # Ratio of negative:positive images to target when balancing the dataset.
+    negative_ratio = 1.0
+    # Number of times the data in the balanced dataset should be augmented.
+    blowup = 5
 
     # number of convolutional filters to use
     nb_filters = 32
@@ -56,10 +55,10 @@ if __name__ == '__main__':
     # Number of samples per epoch has to be a multiple of batch size. Thus we'll use the largest
     # multiple of batch size possible. This wastes at most batch size amount of samples.
     # Also limit training to 20000 images max due to time constraints.
-    num_training_samples = min(20000, len(balanced.index)) // batch_size * batch_size
+    num_training_samples = min(15000, len(balanced.index) * blowup) // batch_size * batch_size
     num_validation_samples = num_training_samples * validation_split
 
-    print('Training on set of {} images with a negative:positive ratio of approximately {}'.format(len(balanced.index),
+    print('Training on set of {} images with a negative:positive ratio of approximately {}'.format(num_training_samples,
                                                                                                    negative_ratio))
     history = model.fit_generator(creator.get_generator(dataset=balanced), num_training_samples,
                                   nb_epoch, validation_data=creator.get_generator('validation'),

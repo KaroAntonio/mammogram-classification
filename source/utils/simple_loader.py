@@ -151,14 +151,11 @@ class BatchGeneratorCreator(object):
                 if curr_idx >= dataset_len:
                     curr_idx = 0
 
-
-
             if train_mode:
                 # Generate extra images only when training
                 self.image_generator.fit(x)
-                for X_batch, y_batch in self.image_generator.flow(x, y, batch_size=self.batch_size):
-                    yield X_batch, y_batch
-                # yield x, y
+                x, y = self.image_generator.flow(x, y, batch_size=self.batch_size).next()
+                yield x, y
             else:
                 yield x
 
