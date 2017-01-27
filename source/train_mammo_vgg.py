@@ -1,12 +1,19 @@
 from __future__ import print_function
 
+USE_PRELU = True
+
+
 import os
 
 import numpy as np
 import utils.simple_loader as sl
 
 import utils.constants as c
-from models.mammo_vgg import VGG16
+
+if USE_PRELU:
+    from models.mammo_vgg import VGG16
+else:
+    from models.mammo_vgg_relu import VGG16
 
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 
