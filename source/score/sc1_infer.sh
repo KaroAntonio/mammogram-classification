@@ -10,4 +10,4 @@
 # 2                 L              0.00
 # 2                 R              0.01
 
-python score_mammo_vgg.py
+python score_mammo.py
