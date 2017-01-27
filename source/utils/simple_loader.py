@@ -115,7 +115,7 @@ class BatchGeneratorCreator(object):
         dataset_len = len(metadata_frame.index)
 
         # A batch cannot be larger than the total number of samples in the dataset.
-        if self.batch_size > dataset_len:
+        if not train_mode and self.batch_size > dataset_len:
             raise ValueError('Batch size {} is larger than the number of samples {} in the dataset.'
                              .format(self.batch_size, dataset_len))
 
